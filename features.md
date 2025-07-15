@@ -50,9 +50,9 @@ Bonymousプロジェクトを Docker Compose で立ち上げるための設定�
 - [x] 必要なデータベースとコレクション/テーブルの作成
 
 ### 8. 🔄 開発・本番環境の設定分離
-- [ ] docker-compose.yml（本番用）
-- [ ] docker-compose.dev.yml（開発用）
-- [ ] ホットリロード機能の開発環境での有効化
+- [x] docker-compose.yml（本番用）
+- [x] docker-compose.dev.yml（開発用）
+- [x] ホットリロード機能の開発環境での有効化
 
 ### 9. 🏥 ヘルスチェックの追加
 - [ ] アプリケーションコンテナのヘルスチェック

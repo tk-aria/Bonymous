@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend-build  # Use development build stage
+    container_name: bonymous-app-dev
+    ports:
+      - "4000:4000"
+    depends_on:
+      - mongodb
+      - postgresql
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongodb:27017/bonymous_dev
+      - SECRET=${SECRET}
+      - DATABASE_TYPE=SQLite
+      - GOOGLE=${GOOGLE}
+      - PGHOST=postgresql
+      - PGPORT=5432
+      - PGDATABASE=bonymous_dev
+      - PGUSER=postgres
+      - PGPASSWORD=${POSTGRES_PASSWORD}
+      - SQLITE_DB_PATH=/app/data/database.sqlite
+    volumes:
+      - ./uploads:/app/uploads
+      - ./src:/app/src  # Source code hot reload
+      - ./public:/app/public  # Frontend hot reload
+      - ./data:/app/data  # SQLite database persistence
+      - ./config.ts:/app/config.ts
+      - ./index.ts:/app/index.ts
+    networks:
+      - bonymous-network
+    restart: unless-stopped
+    command: npm run dev  # Development command with hot reload
+
+  mongodb:
+    image: mongo:6.0
+    container_name: bonymous-mongodb-dev
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=bonymous_dev
+    volumes:
+      - mongodb_data_dev:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    ports:
+      - "27017:27017"
+    networks:
+      - bonymous-network
+    restart: unless-stopped
+
+  postgresql:
+    image: postgres:15
+    container_name: bonymous-postgresql-dev
+    environment:
+      - POSTGRES_DB=bonymous_dev
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgresql_data_dev:/var/lib/postgresql/data
+      - ./init-postgres.sql:/docker-entrypoint-initdb.d/init-postgres.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - bonymous-network
+    restart: unless-stopped
+
+  # Frontend development server (optional)
+  frontend:
+    build:
+      context: ./public
+      dockerfile: ../Dockerfile.dev
+    container_name: bonymous-frontend-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./public:/app
+      - /app/node_modules  # Prevent node_modules from being overwritten
+    environment:
+      - REACT_APP_TITLE=${REACT_APP_TITLE:-Bonymous Development}
+      - REACT_APP_DESCRIPTION=${REACT_APP_DESCRIPTION:-Anonymous Board Application - Development}
+    networks:
+      - bonymous-network
+    depends_on:
+      - app
+    restart: unless-stopped
+
+volumes:
+  mongodb_data_dev:
+    driver: local
+  postgresql_data_dev:
+    driver: local
+
+networks:
+  bonymous-network:
+    driver: bridge
