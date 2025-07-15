@@ -109,3 +109,4 @@ config.ts
 config.ts
 database.sqlite
 package-lock.json
+.claude
