@@ -80,6 +80,16 @@ export default class Api extends Base {
             return res.send({ message: "Hello world" });
         });
 
+        // Health check endpoint for Docker health checks
+        this.router.get("/health", (req, res): any => {
+            return res.status(200).json({ 
+                status: "ok", 
+                timestamp: new Date().toISOString(),
+                uptime: process.uptime(),
+                message: "Service is running"
+            });
+        });
+
         this.loadApiRoutes();
 
         return this.router;

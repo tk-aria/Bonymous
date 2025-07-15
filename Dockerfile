@@ -34,6 +34,9 @@ RUN npx tsc --outDir dist
 FROM node:18-alpine AS runtime
 WORKDIR /app
 
+# Install curl for health checks
+RUN apk add --no-cache curl
+
 # Copy production dependencies
 COPY --from=backend-deps /app/node_modules ./node_modules
 COPY package*.json ./
