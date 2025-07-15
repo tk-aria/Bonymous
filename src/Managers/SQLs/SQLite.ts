@@ -5,7 +5,8 @@ export default class SQLite {
     private client: sqlite.Database;
 
     constructor() {
-        this.client = new sqlite("database.sqlite");
+        const dbPath = process.env.SQLITE_DB_PATH || "database.sqlite";
+        this.client = new sqlite(dbPath);
 
         this.client.prepare(`CREATE TABLE IF NOT EXISTS uploads (
             id TEXT PRIMARY KEY,

@@ -48,7 +48,7 @@ export default class Api extends Base {
         passport.use(new Strategy({
             clientID: GOOGLE.client_id,
             clientSecret: GOOGLE.client_secret,
-            callbackURL: `http://localhost:4000/api/auth/google/callback`
+            callbackURL: process.env.GOOGLE_CALLBACK_URL || `http://localhost:4000/api/auth/google/callback`
         }, async (accessToken, refreshToken, profile, done) => {
             let { id, name, displayName, photos } = profile;
 

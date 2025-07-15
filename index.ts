@@ -9,8 +9,9 @@ declare module "express-session" {
     }
 }
 
-const server = new Server(4000);
+const PORT = parseInt(process.env.PORT || "4000");
+const server = new Server(PORT);
 
 server.start(() => {
-    Logger.log("Server is listening on port 4000");
+    Logger.log(`Server is listening on port ${PORT}`);
 });
