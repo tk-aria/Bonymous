@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bonymous-app
+    ports:
+      - "4000:4000"
+    depends_on:
+      - mongodb
+      - postgresql
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017/bonymous
+      - SECRET=${SECRET}
+      - DATABASE_TYPE=PostgreSQL
+      - GOOGLE=${GOOGLE}
+      - PGHOST=postgresql
+      - PGPORT=5432
+      - PGDATABASE=bonymous
+      - PGUSER=postgres
+      - PGPASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - ./uploads:/app/uploads
+    networks:
+      - bonymous-network
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:6.0
+    container_name: bonymous-mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=bonymous
+    volumes:
+      - mongodb_data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    ports:
+      - "27017:27017"
+    networks:
+      - bonymous-network
+    restart: unless-stopped
+
+  postgresql:
+    image: postgres:15
+    container_name: bonymous-postgresql
+    environment:
+      - POSTGRES_DB=bonymous
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+      - ./init-postgres.sql:/docker-entrypoint-initdb.d/init-postgres.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - bonymous-network
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:
+    driver: local
+  postgresql_data:
+    driver: local
+
+networks:
+  bonymous-network:
+    driver: bridge
