@@ -18,8 +18,8 @@ Bonymousプロジェクトを Docker Compose で立ち上げるための設定�
 - [x] ネットワーク設定とサービス間の通信
 
 ### 3. 🔐 環境変数設定ファイルの作成
-- [ ] .env.example ファイルを作成
-- [ ] 必要な環境変数をすべて定義:
+- [x] .env.example ファイルを作成
+- [x] 必要な環境変数をすべて定義:
   - MONGODB_URI（必須）
   - SECRET（必須）
   - DATABASE_TYPE（オプション）
